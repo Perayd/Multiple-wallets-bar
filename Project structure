@@ -1,0 +1,5 @@
+evm-wallet-manager/
+│
+├── wallets.js
+├── index.js
+├── .env

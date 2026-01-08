@@ -1,0 +1,18 @@
+require("dotenv").config();
+const EvmWalletManager = require("./wallets");
+
+const manager = new EvmWalletManager(
+  process.env.RPC_URL,
+  process.env.PRIVATE_KEYS.split(",")
+);
+
+(async () => {
+  console.log("Addresses:", manager.getAddresses());
+
+  const balances = await manager.getBalances();
+  console.log("Balances:", balances);
+
+  // Send 0.01 ETH from wallet 0
+  // const txHash = await manager.send(0, "0xRecipientAddress", "0.01");
+  // console.log("TX:", txHash);
+})();

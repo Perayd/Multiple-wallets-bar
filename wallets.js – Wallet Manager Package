@@ -1,0 +1,41 @@
+const { ethers } = require("ethers");
+
+class EvmWalletManager {
+  constructor(rpcUrl, privateKeys) {
+    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    this.wallets = privateKeys.map(
+      key => new ethers.Wallet(key, this.provider)
+    );
+  }
+
+  getAddresses() {
+    return this.wallets.map(w => w.address);
+  }
+
+  async getBalances() {
+    const balances = {};
+    for (const wallet of this.wallets) {
+      const balance = await this.provider.getBalance(wallet.address);
+      balances[wallet.address] = ethers.formatEther(balance);
+    }
+    return balances;
+  }
+
+  async send(fromIndex, to, amountEth) {
+    const wallet = this.wallets[fromIndex];
+    const tx = await wallet.sendTransaction({
+      to,
+      value: ethers.parseEther(amountEth)
+    });
+    return tx.hash;
+  }
+
+  connectNewNetwork(rpcUrl) {
+    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    this.wallets = this.wallets.map(
+      w => w.connect(this.provider)
+    );
+  }
+}
+
+module.exports = EvmWalletManager;
